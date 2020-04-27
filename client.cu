@@ -43,7 +43,7 @@ void free_client_params(CLIENT_PARAMS* cp) {
   cudaFree(cp->K);
 }
 
-__global__ void client_kernel(CLIENT_PARAMS cp) {
+__global__ void client_step_kernel(CLIENT_PARAMS cp) {
   // See CLIENT_PARAMS struct definition for explanation of variables below
   const float  t = cp.t;
   const int    m = cp.m;

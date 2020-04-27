@@ -14,7 +14,7 @@ int main() {
   alloc_client_params(1048576, &cp);
   init_client_params_zeros(&cp);
 
-  client_kernel<<<(cp.m + N_THREADS - 1) / N_THREADS, N_THREADS>>>(cp);
+  client_step_kernel<<<(cp.m + N_THREADS - 1) / N_THREADS, N_THREADS>>>(cp);
 
   free_client_params(&cp);
 
