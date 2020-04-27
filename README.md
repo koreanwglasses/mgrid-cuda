@@ -1,1 +1,1 @@
-Compile with `nvcc mgrid.cu`
+Compile with `nvcc *.cu`
