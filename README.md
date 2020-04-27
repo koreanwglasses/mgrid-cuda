@@ -1,0 +1,1 @@
+Compile with `nvcc mgrid.cu`
