@@ -3,9 +3,10 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-typedef struct SYNCZR_PARAMS {
-  float total_bandwidth; // <- Maximum network bandwidth of the synchronizer
+#include "client.h"
+#include "utils.h"
 
-} SYNCZR_PARAMS;
+// This module only contains helper functions: the bulk of the work is done in
+// client.cu
 
-__global__ void synczr_kernel(SYNCZR_PARAMS sp);
+float synczr_min_tc(CLIENT_PARAMS cp); 

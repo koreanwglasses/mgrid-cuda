@@ -48,11 +48,10 @@ __global__ void client_step_kernel(CLIENT_PARAMS cp) {
   const float  t = cp.t;
   const int    m = cp.m;
   const float* B = cp.B; 
-  const float* C = cp.C; // might not be used in the client kernel, may only
-                         // be needed for synchronizer (?)
+  const float* C = cp.C;
   const float* L = cp.L; 
   const int*   Q = cp.Q;
-  const float* E = cp.E; // ditto
+  const float* E = cp.E;
   const float* I = cp.I;
   const float* R = cp.R; 
   
@@ -61,18 +60,23 @@ __global__ void client_step_kernel(CLIENT_PARAMS cp) {
 
   unsigned int k = blockIdx.x*blockDim.x + threadIdx.x;
 
-  float t_exec;
-
   while(k < m) {
     // Compute time to execute task (might not be used)
-    t_exec = L[k] + I[k] * B[k] + I[k] * R[k]; // + computation time (?)
-          //  ^          ^             ^
-          // Latency     ^       upload results
-          //      download task
+    float t_latency = L[k]; // latency
+    float t_download = I[k] * B[k]; // download time
+    float t_compute = E[k]; // computation time (?) not sure how to compute this
+    float t_upload = I[k] * R[k]; // upload time
+    float t_exec = t_latency + t_download + t_compute + t_upload; 
       
     // Add this execution time to the next completioan time, if applicable
-    K[k] += (t <= Tc[k] && Q[k]);
-    Tc[k] += (t <= Tc[k] && Q[k]) * t_exec;
+    int is_job_complete = t <= Tc[k]; // is current/last job complete
+    int is_job_available = Q[k]; // is new job available
+    // (?) specifically for game of life: have neighbors completed their tasks?
+    int are_deps_complete = K[k] >= K[(k - 1 + m) % m] && K[k] >= K[(k + 1) % m]; 
+    int is_free = is_job_complete && is_job_available && are_deps_complete;
+
+    K[k] += is_free;
+    Tc[k] += is_free * t_exec;
 
     k += blockDim.x * gridDim.x;
   }

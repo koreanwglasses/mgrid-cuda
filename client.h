@@ -35,3 +35,5 @@ void free_client_params(CLIENT_PARAMS* cp);
 // when the node becomes free. When t > Tc[k], the new task is loaded, and the
 // appropriate variables changed.
 __global__ void client_step_kernel(CLIENT_PARAMS cp);
+
+// TODO: client task scheduling, multiple tasks
